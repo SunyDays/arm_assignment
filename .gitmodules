@@ -1,0 +1,3 @@
+[submodule "jelf"]
+	path = jelf
+	url = https://github.com/fornwall/jelf.git
