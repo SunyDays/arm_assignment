@@ -21,7 +21,7 @@ object ElfFileJsonProtocol extends DefaultJsonProtocol {
           "Offset"    -> JsNumber(section.`section_offset`),
           "Size"      -> JsNumber(section.`size`),
           "EntSize"   -> JsNumber(section.`entry_size`),
-          "Flags"     -> JsNumber(section.`flags`),
+          "Flags"     -> JsString(getElfSectionFlagsStr(section.`flags`)),
           "Link"      -> JsNumber(section.`link`),
           "Info"      -> JsNumber(section.`info`),
           "Alignment" -> JsNumber(section.`address_alignment`)
@@ -418,5 +418,30 @@ object ElfFileStrings {
     } else {
       "reserved"
     }
+  }
+
+  val elfSectionFlagStr = Array(
+    "WRITE", "ALLOC", "EXECINSTR", "MERGE",
+    "STRINGS", "INFO_LINK", "LINK_ORDER",
+    "OS_NONCONFORMING", "GROUP", "TLS"
+  )
+
+  val elfSectionFlag = Array(
+    0x1, 0x2, 0x4, 0x10, 0x20, 0x40,
+    0x80, 0x100, 0x200, 0x400
+  )
+
+  def getElfSectionFlagsStr(flags: Long): String = {
+    var str = ""
+
+    for (i <- 0 until elfSectionFlag.length) {
+      if ((flags & elfSectionFlag(i)) != 0) {
+        str = str +
+        (if (str.isEmpty) "" else " | ") +
+        elfSectionFlagStr(i)
+      }
+    }
+
+    str
   }
 }
