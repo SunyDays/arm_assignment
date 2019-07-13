@@ -29,6 +29,22 @@ object ElfFileJsonProtocol extends DefaultJsonProtocol {
         sectionHeaders = sectionHeaders :+ sectionJson
       }
 
+      var programHeaders: Array[JsObject] = Array[JsObject]();
+      for (i <- 0 until elfFile.num_ph) {
+        val program = elfFile.getProgramHeader(i)
+        val programJson = JsObject(
+          "Type"     -> JsString(getElfSegmentTypeStr(program.`type`)),
+          "Offset"   -> JsNumber(program.`offset`),
+          "VirtAddr" -> JsNumber(program.`virtual_address`),
+          "PhysAddr" -> JsNumber(program.`physical_address`),
+          "FileSiz"  -> JsNumber(program.`file_size`),
+          "MemSiz"   -> JsNumber(program.`mem_size`),
+          "Flags"    -> JsNumber(program.`flags`),
+          "Align"    -> JsNumber(program.`alignment`)
+        )
+        programHeaders = programHeaders :+ programJson
+      }
+
       JsObject(
         "Class"                  -> JsString(elfClassStr(elfFile.objectSize)),
         "Encoding"               -> JsString(elfDataStr(elfFile.encoding)),
@@ -48,6 +64,7 @@ object ElfFileJsonProtocol extends DefaultJsonProtocol {
         "Section header size"    -> JsNumber(elfFile.sh_entry_size),
         "Section headers count"  -> JsNumber(elfFile.num_sh),
         "Section headers"        -> JsArray(sectionHeaders.toVector),
+        "Program headers"        -> JsArray(programHeaders.toVector)
       )
     }
 
@@ -378,6 +395,26 @@ object ElfFileStrings {
   def getElfSectionTypeStr(idx: Long): String = {
     if (idx < elfSectionTypeStr.length) {
       elfSectionTypeStr(idx.toInt)
+    } else {
+      "reserved"
+    }
+  }
+
+  val elfSegmentTypeStr = Array(
+    "NULL",
+    "LOAD",
+    "DYNAMIC",
+    "INTERP",
+    "NOTE",
+    "SHLIB",
+    "PHDR",
+    "TLS"
+  )
+
+  // map main segmen types
+  def getElfSegmentTypeStr(idx: Long): String = {
+    if (idx < elfSegmentTypeStr.length) {
+      elfSegmentTypeStr(idx.toInt)
     } else {
       "reserved"
     }
