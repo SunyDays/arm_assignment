@@ -9,6 +9,26 @@ object ElfFileJsonProtocol extends DefaultJsonProtocol {
   implicit object ElfFileJsonFormat extends RootJsonFormat[ElfFile] {
     // serialization
     def write(elfFile: ElfFile): JsValue = {
+      var sectionHeaders: Array[JsObject] = Array[JsObject]();
+
+      // loop begin from 1 because first section is always NULL
+      for (i <- 1 until elfFile.num_sh) {
+        val section = elfFile.getSection(i)
+        val sectionJson = JsObject(
+          "Name"      -> JsString(section.getName()),
+          "Type"      -> JsString(getElfSectionTypeStr(section.`type`)),
+          "Address"   -> JsNumber(section.`address`),
+          "Offset"    -> JsNumber(section.`section_offset`),
+          "Size"      -> JsNumber(section.`size`),
+          "EntSize"   -> JsNumber(section.`entry_size`),
+          "Flags"     -> JsNumber(section.`flags`),
+          "Link"      -> JsNumber(section.`link`),
+          "Info"      -> JsNumber(section.`info`),
+          "Alignment" -> JsNumber(section.`address_alignment`)
+        )
+        sectionHeaders = sectionHeaders :+ sectionJson
+      }
+
       JsObject(
         "Class"                  -> JsString(elfClassStr(elfFile.objectSize)),
         "Encoding"               -> JsString(elfDataStr(elfFile.encoding)),
@@ -26,7 +46,8 @@ object ElfFileJsonProtocol extends DefaultJsonProtocol {
         "Program header size"    -> JsNumber(elfFile.ph_entry_size),
         "Program headers count"  -> JsNumber(elfFile.num_ph),
         "Section header size"    -> JsNumber(elfFile.sh_entry_size),
-        "Section headers count"  -> JsNumber(elfFile.num_sh)
+        "Section headers count"  -> JsNumber(elfFile.num_sh),
+        "Section headers"        -> JsArray(sectionHeaders.toVector),
       )
     }
 
@@ -38,8 +59,8 @@ object ElfFileJsonProtocol extends DefaultJsonProtocol {
   }
 }
 
-// Readable values for some ELF Header values.
-// According to System-V Application Binary Interface.
+// Readable values for some ELF fields.
+// According to System-V Application Binary Interface, man elf(5) and 'elf.h'
 object ElfFileStrings {
   val elfClassStr = Array(
     "Invalid",
@@ -330,4 +351,35 @@ object ElfFileStrings {
     "Shared object file",
     "Core file"
   )
+
+  val elfSectionTypeStr = Array(
+    "NULL",
+    "PROGBITS",
+    "SYMTAB",
+    "STRTAB",
+    "RELA",
+    "HASH",
+    "DYNAMIC",
+    "NOTE",
+    "NOBITS",
+    "REL",
+    "SHLIB",
+    "DYNSYM",
+    "UNKNOWN",
+    "UNKNOWN",
+    "INIT_ARRAY",
+    "FINI_ARRAY",
+    "PREINIT_ARRAY",
+    "GROUP",
+    "SYMTAB_SHNDX"
+  )
+
+  // map only main section types, return 'reserved' for others
+  def getElfSectionTypeStr(idx: Long): String = {
+    if (idx < elfSectionTypeStr.length) {
+      elfSectionTypeStr(idx.toInt)
+    } else {
+      "reserved"
+    }
+  }
 }
