@@ -39,7 +39,7 @@ object ElfFileJsonProtocol extends DefaultJsonProtocol {
           "PhysAddr" -> JsNumber(program.`physical_address`),
           "FileSiz"  -> JsNumber(program.`file_size`),
           "MemSiz"   -> JsNumber(program.`mem_size`),
-          "Flags"    -> JsNumber(program.`flags`),
+          "Flags"    -> JsString(getElfSegmentFlagsStr(program.`flags`)),
           "Align"    -> JsNumber(program.`alignment`)
         )
         programHeaders = programHeaders :+ programJson
@@ -439,6 +439,28 @@ object ElfFileStrings {
         str = str +
         (if (str.isEmpty) "" else " | ") +
         elfSectionFlagStr(i)
+      }
+    }
+
+    str
+  }
+
+  val elfSegmentFlagStr = Array(
+    "Executable", "Writable", "Readable"
+  )
+
+  val elfSegmentFlag = Array(
+    0x1, 0x2, 0x4
+  )
+
+  def getElfSegmentFlagsStr(flags: Long): String = {
+    var str = ""
+
+    for (i <- 0 until elfSegmentFlag.length) {
+      if ((flags & elfSegmentFlag(i)) != 0) {
+        str = str +
+        (if (str.isEmpty) "" else " | ") +
+        elfSegmentFlagStr(i)
       }
     }
 
