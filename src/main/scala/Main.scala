@@ -7,11 +7,12 @@ import arm_assignment.ElfFileJsonProtocol._
 
 object Main {
   def main(args: Array[String]): Unit = {
-    if (args.length > 0) {
+    if (args.length == 0) {
+      println("Usage: sbt \"run <path_to_elf>\"")
+      System.exit(1)
+    }
+
       val elfFile = ElfFile.fromFile(new File(args(0)))
       println(elfFile.toJson.prettyPrint)
-    } else {
-      println("Usage: sbt \"run <path_to_elf>\"")
-    }
   }
 }
