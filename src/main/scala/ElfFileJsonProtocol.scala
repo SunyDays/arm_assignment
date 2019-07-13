@@ -92,7 +92,7 @@ object ElfFileStrings {
   )
 
   val elfOsAbiStr = Array(
-    "No extensions or unspecified",
+    "System-V",
     "Hewlett-Packard HP-UX",
     "NetBSD",
     "GNU/Linux",
