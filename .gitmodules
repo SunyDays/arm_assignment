@@ -1,3 +1,4 @@
 [submodule "jelf"]
 	path = jelf
-	url = https://github.com/fornwall/jelf.git
+	url = https://github.com/SunyDays/jelf.git
+
