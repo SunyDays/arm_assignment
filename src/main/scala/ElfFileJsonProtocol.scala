@@ -369,7 +369,7 @@ object ElfFileStrings {
     "Core file"
   )
 
-  val elfSectionTypeStr = Array(
+  private val elfSectionTypeStr = Array(
     "NULL",
     "PROGBITS",
     "SYMTAB",
@@ -400,7 +400,7 @@ object ElfFileStrings {
     }
   }
 
-  val elfSegmentTypeStr = Array(
+  private val elfSegmentTypeStr = Array(
     "NULL",
     "LOAD",
     "DYNAMIC",
@@ -420,13 +420,13 @@ object ElfFileStrings {
     }
   }
 
-  val elfSectionFlagStr = Array(
+  private val elfSectionFlagStr = Array(
     "WRITE", "ALLOC", "EXECINSTR", "MERGE",
     "STRINGS", "INFO_LINK", "LINK_ORDER",
     "OS_NONCONFORMING", "GROUP", "TLS"
   )
 
-  val elfSectionFlag = Array(
+  private val elfSectionFlag = Array(
     0x1, 0x2, 0x4, 0x10, 0x20, 0x40,
     0x80, 0x100, 0x200, 0x400
   )
@@ -445,11 +445,11 @@ object ElfFileStrings {
     str
   }
 
-  val elfSegmentFlagStr = Array(
+  private val elfSegmentFlagStr = Array(
     "Executable", "Writable", "Readable"
   )
 
-  val elfSegmentFlag = Array(
+  private val elfSegmentFlag = Array(
     0x1, 0x2, 0x4
   )
 
